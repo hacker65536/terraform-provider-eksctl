@@ -2,11 +2,13 @@ package cluster
 
 import (
 	"fmt"
-	"github.com/mumoshu/terraform-provider-eksctl/pkg/resource"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/mumoshu/terraform-provider-eksctl/pkg/resource"
 )
 
 func doCheckPodsReadiness(cluster *Cluster, id string) error {
@@ -61,6 +63,7 @@ func doCheckPodsReadiness(cluster *Cluster, id string) error {
 		}
 
 		kubectlCmd.Env = append(kubectlCmd.Env, "KUBECONFIG="+kubeconfigPath)
+		log.Printf("[DEBUG] kubectlCmd: %v ", kubectlCmd)
 
 		if _, err := resource.Run(kubectlCmd); err != nil {
 			return err

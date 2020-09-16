@@ -2,6 +2,7 @@
 OS            := $(shell go env GOOS)
 ARCH          := $(shell go env GOARCH)
 PLUGIN_PATH   ?= ${HOME}/.terraform.d/plugins/${OS}_${ARCH}
+PLUGIN_PATH2  := ${HOME}/.terraform.d/plugins/example.com/myorg/eksctl/0.8.3/${OS}_${ARCH}
 PLUGIN_NAME   := terraform-provider-eksctl
 DIST_PATH     := dist/${OS}_${ARCH}
 GO_PACKAGES   := $(shell go list ./... | grep -v /vendor/)
@@ -30,6 +31,7 @@ install: build
 	mkdir -p $(PLUGIN_PATH); \
 	rm -rf $(PLUGIN_PATH)/${PLUGIN_NAME}; \
 	install -m 0755 $(DIST_PATH)/${PLUGIN_NAME} $(PLUGIN_PATH)/${PLUGIN_NAME}
+	install -m 0755 $(DIST_PATH)/${PLUGIN_NAME} $(PLUGIN_PATH2)/${PLUGIN_NAME}
 
 # Set TF_LOG=DEBUG to enable debug logs from the provider
 # Setting TF_LOG_PATH would also help
