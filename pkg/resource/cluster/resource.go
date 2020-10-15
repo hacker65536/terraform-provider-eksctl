@@ -194,6 +194,13 @@ func ResourceCluster() *schema.Resource {
 					Type: schema.TypeBool,
 				},
 			},
+			KeyClusterAdminRoles: {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			resource.KeyOutput: {
 				Type:     schema.TypeString,
 				Computed: true,

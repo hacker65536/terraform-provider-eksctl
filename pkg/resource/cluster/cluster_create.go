@@ -3,14 +3,15 @@ package cluster
 import (
 	"bytes"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/mumoshu/terraform-provider-eksctl/pkg/resource"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/mumoshu/terraform-provider-eksctl/pkg/resource"
 )
 
 func (m *Manager) createCluster(d *schema.ResourceData) (*ClusterSet, error) {
@@ -38,6 +39,10 @@ func (m *Manager) createCluster(d *schema.ResourceData) (*ClusterSet, error) {
 
 	if err := resource.Create(cmd, d, id); err != nil {
 		return nil, fmt.Errorf("running `eksctl create cluster: %w: USED CLUSTER CONFIG:\n%s", err, string(set.ClusterConfig))
+	}
+
+	if err := createIamidentitymapping(d, cluster); err != nil {
+		return nil, fmt.Errorf("Can not create cm for adminrole: %w", err)
 	}
 
 	if err := doWriteKubeconfig(d, string(set.ClusterName), cluster.Region); err != nil {
@@ -130,5 +135,33 @@ func doWriteKubeconfig(d ReadWrite, clusterName, region string) error {
 		time.Sleep(retryDelay)
 	}
 
+	return nil
+}
+
+func createIamidentitymapping(d *schema.ResourceData, cluster *Cluster) error {
+
+	roles := d.Get(KeyClusterAdminRoles).([]interface{})
+	for _, v := range roles {
+		opt := []string{
+			"create",
+			"iamidentitymapping",
+			"--cluster",
+			cluster.Name,
+			"--arn",
+			v.(string),
+			"--group",
+			"system:masters",
+			"--username",
+			"freee-sso-admin",
+		}
+		cmd, err := newEksctlCommandWithAWSProfile(cluster, opt...)
+
+		if err != nil {
+			return fmt.Errorf("creating imaidentitymapping command: %w", err)
+		}
+		if _, err := resource.Run(cmd); err != nil {
+			return fmt.Errorf("running `eksctl create iamidentitymapping : %w", err)
+		}
+	}
 	return nil
 }
