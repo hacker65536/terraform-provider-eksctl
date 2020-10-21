@@ -33,7 +33,11 @@ const KeyVPCID = "vpc_id"
 const KeyManifests = "manifests"
 const KeyMetrics = "metrics"
 const KeyDrainNodeGroups = "drain_node_groups"
+<<<<<<< HEAD
+const KeyIAMIdentityMapping = "iam_identity_mapping"
+=======
 const KeyClusterAdminRoles = "cluster_admin_roles"
+>>>>>>> 9f9341550a1a6ea688bcc3e72e59d31e2f72f032
 const (
 	KeyTargetGroupARNs = "target_group_arns"
 )

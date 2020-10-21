@@ -41,8 +41,13 @@ func (m *Manager) createCluster(d *schema.ResourceData) (*ClusterSet, error) {
 		return nil, fmt.Errorf("running `eksctl create cluster: %w: USED CLUSTER CONFIG:\n%s", err, string(set.ClusterConfig))
 	}
 
+<<<<<<< HEAD
+	if err := ensureIAMIdentityMapping(d, cluster); err != nil {
+		return nil, fmt.Errorf("Can not get iamidentity: %w", err)
+=======
 	if err := createIamidentitymapping(d, cluster); err != nil {
 		return nil, fmt.Errorf("Can not create cm for adminrole: %w", err)
+>>>>>>> 9f9341550a1a6ea688bcc3e72e59d31e2f72f032
 	}
 
 	if err := doWriteKubeconfig(d, string(set.ClusterName), cluster.Region); err != nil {
@@ -138,6 +143,38 @@ func doWriteKubeconfig(d ReadWrite, clusterName, region string) error {
 	return nil
 }
 
+<<<<<<< HEAD
+func ensureIAMIdentityMapping(d *schema.ResourceData, cluster *Cluster) error {
+
+	// get current iamidentitymapping
+
+	roles := d.Get(KeyIAMIdentityMapping).([]interface{})
+	log.Printf("iamidentitymapping: %v", roles)
+	/*
+		for _, v := range roles {
+			opt := []string{
+				"create",
+				"iamidentitymapping",
+				"--cluster",
+				cluster.Name,
+				"--arn",
+				v.(string),
+				"--group",
+				"system:masters",
+				"--username",
+				"freee-sso-admin",
+			}
+			cmd, err := newEksctlCommandWithAWSProfile(cluster, opt...)
+
+			if err != nil {
+				return fmt.Errorf("creating imaidentitymapping command: %w", err)
+			}
+			if _, err := resource.Run(cmd); err != nil {
+				return fmt.Errorf("running `eksctl create iamidentitymapping : %w", err)
+			}
+		}
+	*/
+=======
 func createIamidentitymapping(d *schema.ResourceData, cluster *Cluster) error {
 
 	roles := d.Get(KeyClusterAdminRoles).([]interface{})
@@ -163,5 +200,6 @@ func createIamidentitymapping(d *schema.ResourceData, cluster *Cluster) error {
 			return fmt.Errorf("running `eksctl create iamidentitymapping : %w", err)
 		}
 	}
+>>>>>>> 9f9341550a1a6ea688bcc3e72e59d31e2f72f032
 	return nil
 }

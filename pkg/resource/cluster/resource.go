@@ -225,11 +225,27 @@ func ResourceCluster() *schema.Resource {
 					Type: schema.TypeBool,
 				},
 			},
-			KeyClusterAdminRoles: {
-				Type:     schema.TypeList,
+			KeyIAMIdentityMapping: {
+				Type:     schema.TypeSet,
 				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"role_arn": {
+							Required: true,
+							Type:     schema.TypeString,
+						},
+						"username": {
+							Required: true,
+							Type:     schema.TypeString,
+						},
+						"groups": {
+							Optional: true,
+							Type:     schema.TypeList,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
 				},
 			},
 			resource.KeyOutput: {
